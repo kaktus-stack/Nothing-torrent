@@ -9,7 +9,7 @@ import (
 	"github.com/nothing-torrent/nothing-torrent/internal/torrent"
 )
 
-// RenderDashboard renders the live download dashboard
+// RenderDashboard renders the live download dashboard with responsive layout
 func RenderDashboard(
 	torrentName string,
 	files []*torrent.FileEntry,
@@ -25,6 +25,10 @@ func RenderDashboard(
 	viewportHeight int,
 ) string {
 	var b strings.Builder
+
+	if width < 40 {
+		width = 40
+	}
 
 	// Calculate overall ratio and progress
 	var progressRatio float64
@@ -52,12 +56,17 @@ func RenderDashboard(
 	var stealthBadge string
 	if cfg.StealthMode {
 		clientProfile := cfg.GetUserAgent()
-		stealthBadge = fmt.Sprintf(
-			"[%s %s · %s]",
-			RedDotStyle.Render("●"),
-			lipgloss.NewStyle().Bold(true).Foreground(ColorWhite).Render(fmt.Sprintf("RATIO %s", torrent.FormatRatio(currentRatio))),
-			lipgloss.NewStyle().Foreground(ColorMuted).Render(clientProfile),
-		)
+		if width < 70 {
+			// Compact badge for narrow terminals
+			stealthBadge = fmt.Sprintf("[%s %s]", RedDotStyle.Render("●"), torrent.FormatRatio(currentRatio))
+		} else {
+			stealthBadge = fmt.Sprintf(
+				"[%s %s · %s]",
+				RedDotStyle.Render("●"),
+				lipgloss.NewStyle().Bold(true).Foreground(ColorWhite).Render(fmt.Sprintf("RATIO %s", torrent.FormatRatio(currentRatio))),
+				lipgloss.NewStyle().Foreground(ColorMuted).Render(clientProfile),
+			)
+		}
 	} else {
 		stealthBadge = lipgloss.NewStyle().Foreground(ColorMuted).Render("[STEALTH: OFF]")
 	}
@@ -65,53 +74,73 @@ func RenderDashboard(
 	header := fmt.Sprintf("%s   %s   %s", Logo(), statusBadge, stealthBadge)
 	b.WriteString(header + "\n\n")
 
-	// 2. Torrent Title
-	b.WriteString(TitleStyle.Render(torrentName) + "\n\n")
+	// 2. Torrent Title (truncated if wider than terminal)
+	displayTitle := torrentName
+	if len(displayTitle) > width-4 {
+		displayTitle = displayTitle[:width-7] + "..."
+	}
+	b.WriteString(TitleStyle.Render(displayTitle) + "\n\n")
 
-	// 3. Main Progress Bar
-	barWidth := width - 18
-	if barWidth > 60 {
-		barWidth = 60
-	} else if barWidth < 20 {
-		barWidth = 20
+	// 3. Main Progress Bar (Adaptive width)
+	barWidth := width - 16
+	if barWidth > 65 {
+		barWidth = 65
+	} else if barWidth < 12 {
+		barWidth = 12
 	}
 	progressBar := RenderProgressBar(barWidth, progressRatio)
 	b.WriteString(progressBar + "\n\n")
 
-	// 4. Telemetry Grid (2 columns)
+	// 4. Telemetry Grid (Responsive: 3 cards if wide, 2 or stacked if narrow)
 	downSpeedStr := FormatSpeed(speed)
 	upSpeedStr := fmt.Sprintf("%d KB/s (Stealth)", simUploadSpeed)
 	downDataStr := fmt.Sprintf("%s / %s", FormatBytes(completedBytes), FormatBytes(totalSelectedBytes))
-	upDataStr := fmt.Sprintf("%s (Simulated)", FormatBytes(fakeUploaded))
+	upDataStr := fmt.Sprintf("%s (Sim)", FormatBytes(fakeUploaded))
 
-	col1 := fmt.Sprintf(
-		"DOWN SPEED: %s\nDOWNLOADED: %s",
-		StatValueStyle.Render(downSpeedStr),
-		StatValueStyle.Render(downDataStr),
-	)
-
-	col2 := fmt.Sprintf(
-		"STEALTH UP: %s\nREPORTED:   %s",
-		RedDotStyle.Render(upSpeedStr),
-		StatValueStyle.Render(upDataStr),
-	)
-
-	col3 := fmt.Sprintf(
-		"ETA:        %s\nPEERS:      %s",
-		StatValueStyle.Render(FormatETA(etaSeconds)),
-		StatValueStyle.Render(fmt.Sprintf("%d", peers)),
-	)
-
-	grid := lipgloss.JoinHorizontal(lipgloss.Top,
-		CardStyle.Render(col1),
-		CardStyle.Render(col2),
-		CardStyle.Render(col3),
-	)
-	b.WriteString(grid + "\n\n")
+	if width >= 78 {
+		// Wide screen: 3 horizontal cards
+		col1 := fmt.Sprintf("DOWN SPEED: %s\nDOWNLOADED: %s",
+			StatValueStyle.Render(downSpeedStr),
+			StatValueStyle.Render(downDataStr),
+		)
+		col2 := fmt.Sprintf("STEALTH UP: %s\nREPORTED:   %s",
+			RedDotStyle.Render(upSpeedStr),
+			StatValueStyle.Render(upDataStr),
+		)
+		col3 := fmt.Sprintf("ETA:        %s\nPEERS:      %s",
+			StatValueStyle.Render(FormatETA(etaSeconds)),
+			StatValueStyle.Render(fmt.Sprintf("%d", peers)),
+		)
+		grid := lipgloss.JoinHorizontal(lipgloss.Top,
+			CardStyle.Render(col1),
+			CardStyle.Render(col2),
+			CardStyle.Render(col3),
+		)
+		b.WriteString(grid + "\n\n")
+	} else {
+		// Compact / Narrow screen: clean tabular telemetry
+		line1 := fmt.Sprintf(
+			"DOWN: %s (%s)   PEERS: %s",
+			StatValueStyle.Render(downSpeedStr),
+			StatLabelStyle.Render(downDataStr),
+			StatValueStyle.Render(fmt.Sprintf("%d", peers)),
+		)
+		line2 := fmt.Sprintf(
+			"STEALTH UP: %s (%s)   ETA: %s",
+			RedDotStyle.Render(upSpeedStr),
+			StatLabelStyle.Render(upDataStr),
+			StatValueStyle.Render(FormatETA(etaSeconds)),
+		)
+		b.WriteString(line1 + "\n" + line2 + "\n\n")
+	}
 
 	// 5. Sparkline Speed History
-	if len(speedHistory) > 0 {
-		spark := RenderSparkline(speedHistory, width-20)
+	if len(speedHistory) > 0 && width >= 45 {
+		sparkLen := width - 18
+		if sparkLen > 40 {
+			sparkLen = 40
+		}
+		spark := RenderSparkline(speedHistory, sparkLen)
 		b.WriteString(fmt.Sprintf("SPEED GRAPH  %s\n\n", spark))
 	}
 
@@ -120,8 +149,8 @@ func RenderDashboard(
 	b.WriteString(lipgloss.NewStyle().Bold(true).Foreground(ColorWhite).Render("FILES PROGRESS") + "\n\n")
 
 	maxVisibleFiles := viewportHeight - 22
-	if maxVisibleFiles < 4 {
-		maxVisibleFiles = 4
+	if maxVisibleFiles < 3 {
+		maxVisibleFiles = 3
 	}
 
 	shown := 0
@@ -156,35 +185,62 @@ func RenderDashboard(
 			fileIcon = lipgloss.NewStyle().Foreground(ColorDark).Render("○")
 		}
 
-		miniBar := RenderMiniBar(12, fileRatio)
 		filename := f.DisplayPath
-		maxNameLen := width - 42
-		if maxNameLen > 15 && len(filename) > maxNameLen {
-			filename = "..." + filename[len(filename)-maxNameLen:]
-		}
 
-		line := fmt.Sprintf(
-			"%s %-35s %s %5.1f%% (%s)",
-			fileIcon,
-			filename,
-			miniBar,
-			fileRatio*100,
-			FormatBytes(f.Length),
-		)
-		b.WriteString(line + "\n")
+		if width >= 70 {
+			// Wide layout: includes mini progress bar
+			maxNameLen := width - 42
+			if maxNameLen > 15 && len(filename) > maxNameLen {
+				filename = "..." + filename[len(filename)-maxNameLen:]
+			}
+			miniBar := RenderMiniBar(10, fileRatio)
+			line := fmt.Sprintf(
+				"%s %-32s %s %5.1f%% (%s)",
+				fileIcon,
+				filename,
+				miniBar,
+				fileRatio*100,
+				FormatBytes(f.Length),
+			)
+			b.WriteString(line + "\n")
+		} else {
+			// Compact layout: no mini bar, clean percent & size
+			maxNameLen := width - 25
+			if maxNameLen > 10 && len(filename) > maxNameLen {
+				filename = "..." + filename[len(filename)-maxNameLen:]
+			}
+			line := fmt.Sprintf(
+				"%s %-20s %5.1f%% (%s)",
+				fileIcon,
+				filename,
+				fileRatio*100,
+				FormatBytes(f.Length),
+			)
+			b.WriteString(line + "\n")
+		}
 		shown++
 	}
 
-	// 7. Footer hotkeys
+	// 7. Footer hotkeys (Responsive wrapping)
 	b.WriteString("\n" + lipgloss.NewStyle().Foreground(ColorDark).Render(strings.Repeat("─", width)) + "\n")
-	footer := fmt.Sprintf(
-		"%s %s   %s %s   %s %s   %s %s",
-		HelpKeyStyle.Render("[p]"), HelpDescStyle.Render("Pause/Resume"),
-		HelpKeyStyle.Render("[s]"), HelpDescStyle.Render("Toggle Stealth"),
-		HelpKeyStyle.Render("[o]"), HelpDescStyle.Render("Open Folder"),
-		HelpKeyStyle.Render("[q]"), HelpDescStyle.Render("Quit"),
-	)
-	b.WriteString(footer + "\n")
+	if width >= 65 {
+		footer := fmt.Sprintf(
+			"%s %s   %s %s   %s %s   %s %s",
+			HelpKeyStyle.Render("[p]"), HelpDescStyle.Render("Pause/Resume"),
+			HelpKeyStyle.Render("[s]"), HelpDescStyle.Render("Settings"),
+			HelpKeyStyle.Render("[o]"), HelpDescStyle.Render("Open Folder"),
+			HelpKeyStyle.Render("[q]"), HelpDescStyle.Render("Quit"),
+		)
+		b.WriteString(footer + "\n")
+	} else {
+		footer := fmt.Sprintf(
+			"%s %s  %s %s  %s %s",
+			HelpKeyStyle.Render("[p]"), HelpDescStyle.Render("Pause"),
+			HelpKeyStyle.Render("[s]"), HelpDescStyle.Render("Settings"),
+			HelpKeyStyle.Render("[q]"), HelpDescStyle.Render("Quit"),
+		)
+		b.WriteString(footer + "\n")
+	}
 
 	return b.String()
 }

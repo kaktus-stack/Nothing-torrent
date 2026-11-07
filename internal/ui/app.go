@@ -19,6 +19,7 @@ const (
 	StateResolving AppState = iota
 	StateFileSelect
 	StateDownloading
+	StateSettings
 	StateError
 )
 
@@ -29,6 +30,7 @@ type metadataErrMsg struct{ err error }
 // Model is the main Bubble Tea application state
 type Model struct {
 	state          AppState
+	prevState      AppState
 	cfg            *config.Config
 	engine         *torrent.TorrentEngine
 	source         string
@@ -44,6 +46,9 @@ type Model struct {
 	// File selection state
 	cursor         int
 	scrollOffset   int
+
+	// Settings state
+	settingsCursor SettingsField
 
 	// Download state
 	completedBytes int64
@@ -63,7 +68,7 @@ func NewModel(cfg *config.Config, engine *torrent.TorrentEngine, source string) 
 		source:       source,
 		width:        80,
 		height:       24,
-		speedHistory: make([]int64, 0, 40),
+		speedHistory: make([]int64, 0, 50),
 	}
 }
 
@@ -93,7 +98,7 @@ func (m Model) waitForMetadataCmd() tea.Cmd {
 	}
 }
 
-// Update handles incoming events and keyboard input
+// Update handles incoming events and keyboard input with layout-independent key mapping
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -129,12 +134,78 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.tickCmd()
 
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "q":
+		// Normalize key so that Russian/Cyrillic layout triggers same action as QWERTY
+		rawKey := msg.String()
+		actionKey := NormalizeKey(rawKey)
+
+		// Global quit
+		if rawKey == "ctrl+c" || actionKey == "q" {
 			m.engine.Close()
 			return m, tea.Quit
+		}
 
-		case "up", "k":
+		// Settings view handlers
+		if m.state == StateSettings {
+			switch rawKey {
+			case "esc":
+				m.state = m.prevState
+				_ = m.cfg.Save()
+				return m, nil
+			}
+
+			switch actionKey {
+			case "s", "esc":
+				m.state = m.prevState
+				_ = m.cfg.Save()
+				return m, nil
+
+			case "up", "k":
+				if m.settingsCursor > 0 {
+					m.settingsCursor--
+				}
+				return m, nil
+
+			case "down", "j":
+				if m.settingsCursor < FieldCount-1 {
+					m.settingsCursor++
+				}
+				return m, nil
+
+			case "left", "h":
+				m.adjustSetting(false)
+				return m, nil
+
+			case "right", "l", " ":
+				m.adjustSetting(true)
+				return m, nil
+
+			case "enter":
+				m.adjustSetting(true)
+				return m, nil
+			}
+			return m, nil
+		}
+
+		// Standard views handlers
+		switch rawKey {
+		case "up":
+			actionKey = "k"
+		case "down":
+			actionKey = "j"
+		case "left":
+			actionKey = "h"
+		case "right":
+			actionKey = "l"
+		case "enter":
+			actionKey = "enter"
+		case " ":
+			actionKey = " "
+		case "esc":
+			actionKey = "esc"
+		}
+
+		switch actionKey {
+		case "k": // Up
 			if m.state == StateFileSelect {
 				if m.cursor > 0 {
 					m.cursor--
@@ -144,13 +215,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 
-		case "down", "j":
+		case "j": // Down
 			if m.state == StateFileSelect {
 				if m.cursor < len(m.engine.Files)-1 {
 					m.cursor++
 					maxVisible := m.height - 10
-					if maxVisible < 5 {
-						maxVisible = 5
+					if maxVisible < 4 {
+						maxVisible = 4
 					}
 					if m.cursor >= m.scrollOffset+maxVisible {
 						m.scrollOffset = m.cursor - maxVisible + 1
@@ -158,26 +229,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 
-		case " ":
+		case " ": // Space
 			if m.state == StateFileSelect && len(m.engine.Files) > 0 {
 				m.engine.Files[m.cursor].Selected = !m.engine.Files[m.cursor].Selected
 			}
 
-		case "a":
+		case "a": // Select all
 			if m.state == StateFileSelect {
 				for _, f := range m.engine.Files {
 					f.Selected = true
 				}
 			}
 
-		case "n":
+		case "n": // Select none
 			if m.state == StateFileSelect {
 				for _, f := range m.engine.Files {
 					f.Selected = false
 				}
 			}
 
-		case "i":
+		case "i": // Invert selection
 			if m.state == StateFileSelect {
 				for _, f := range m.engine.Files {
 					f.Selected = !f.Selected
@@ -191,23 +262,75 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 
-		case "p":
+		case "p": // Pause / Resume
 			if m.state == StateDownloading {
 				m.isPaused = !m.isPaused
 			}
 
-		case "s":
-			if m.state == StateDownloading {
-				m.cfg.StealthMode = !m.cfg.StealthMode
-				_ = m.cfg.Save()
+		case "s": // Open Settings
+			if m.state == StateDownloading || m.state == StateFileSelect {
+				m.prevState = m.state
+				m.state = StateSettings
 			}
 
-		case "o":
+		case "o": // Open download directory
 			_ = exec.Command("xdg-open", m.cfg.DownloadDir).Start()
 		}
 	}
 
 	return m, nil
+}
+
+func (m *Model) adjustSetting(forward bool) {
+	switch m.settingsCursor {
+	case FieldStealth:
+		m.cfg.StealthMode = !m.cfg.StealthMode
+
+	case FieldTargetRatio:
+		if forward {
+			m.cfg.TargetRatio += 0.05
+			if m.cfg.TargetRatio > 1.50 {
+				m.cfg.TargetRatio = 1.50
+			}
+		} else {
+			m.cfg.TargetRatio -= 0.05
+			if m.cfg.TargetRatio < 0.50 {
+				m.cfg.TargetRatio = 0.50
+			}
+		}
+
+	case FieldClientProfile:
+		profiles := []string{"qbittorrent", "transmission", "deluge"}
+		currIdx := 0
+		for i, p := range profiles {
+			if p == m.cfg.DefaultClient {
+				currIdx = i
+				break
+			}
+		}
+		if forward {
+			currIdx = (currIdx + 1) % len(profiles)
+		} else {
+			currIdx = (currIdx - 1 + len(profiles)) % len(profiles)
+		}
+		m.cfg.DefaultClient = profiles[currIdx]
+
+	case FieldDisableSeed:
+		m.cfg.DisableSeed = !m.cfg.DisableSeed
+
+	case FieldUploadSpeed:
+		if m.cfg.MinUploadKBps <= 60 {
+			m.cfg.MinUploadKBps = 90
+			m.cfg.MaxUploadKBps = 220
+		} else if m.cfg.MinUploadKBps <= 90 {
+			m.cfg.MinUploadKBps = 180
+			m.cfg.MaxUploadKBps = 350
+		} else {
+			m.cfg.MinUploadKBps = 50
+			m.cfg.MaxUploadKBps = 120
+		}
+	}
+	_ = m.cfg.Save()
 }
 
 // View renders the screen based on state
@@ -248,6 +371,13 @@ func (m Model) View() string {
 			m.isPaused,
 			m.width,
 			m.height,
+		)
+
+	case StateSettings:
+		return RenderSettings(
+			m.cfg,
+			m.settingsCursor,
+			m.width,
 		)
 
 	case StateError:

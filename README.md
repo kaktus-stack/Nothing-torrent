@@ -19,7 +19,7 @@ FILES PROGRESS
 ● 01 - ubuntu-24.04-desktop-amd64.iso     ■■■■■■■····  54.2% (5.0 GB)
 ✕ 02 - release-notes.txt                  [SKIPPED]
 
-[p] Pause/Resume   [s] Toggle Stealth   [o] Open Folder   [q] Quit
+[p] Pause/Resume   [s] Settings   [o] Open Folder   [q] Quit
 ```
 
 ---
@@ -30,18 +30,25 @@ FILES PROGRESS
   - High-contrast monochrome palette (`#0A0A0A` black, `#F2F2F2` white, `#737373` muted).
   - Signature Nothing Red (`#D71920`) accent and indicator glyphs (`●`, `○`, `›`).
   - Dot-matrix segmented progress bars and Unicode Braille speed graphs.
+- **Responsive Layout:**
+  - Automatically adapts to terminal width (from small split-panes <60 cols to ultra-wide displays).
+  - Clean card grids on wide terminals; compact stacked telemetry on small screens.
+- **Layout-Agnostic Controls (Russian / Cyrillic Support):**
+  - All hotkeys work seamlessly regardless of keyboard layout (`й` = `q`, `ы` = `s`, `з` = `p`, `щ` = `o`, `ф` = `a`, `т` = `n`, `л`/`о` = `k`/`j`).
 - **Interactive File Selection:**
   - Pick which files to download **before** chunks start writing to disk.
   - Arrow navigation (`↑`/`↓` or `k`/`j`), toggle with `[Space]`, select all (`a`), deselect all (`n`), invert (`i`).
+- **In-App Settings Screen:**
+  - Press `[s]` anywhere to open the live settings menu.
+  - Adjust target ratio, cycle spoofed client profiles, toggle cold-router mode and simulated upload speed presets.
 - **Stealth / Cold-Router Mode (Tracker Spoofing):**
   - Keeps ratio safely balanced around **`0.80 – 0.90`** on private trackers.
   - Emulates client fingerprints (default: `qBittorrent/4.6.5` with `-qB4650-...` peer IDs).
   - Modifies tracker announce metrics with realistic speed jitter without burning upload bandwidth or heating up the router.
-- **Deep Linux & Desktop Integration:**
-  - Auto-registers `.desktop` entry in `~/.local/share/applications/`.
-  - Installs custom Nothing SVG app icon in `~/.local/share/icons/`.
-  - Automatically hooks into `application/x-bittorrent` and `x-scheme-handler/magnet` via `xdg-mime`.
-  - Clicking any torrent file in file managers (Dolphin, Nautilus, Thunar) or magnet link in browsers (Chrome, Firefox, Brave) instantly pops open your favorite terminal (`kitty`, `alacritty`, `ghostty`, etc.) with NothingTorrent running.
+- **Universal Linux & Desktop Integration:**
+  - Auto-detects terminal emulator (`kitty`, `alacritty`, `foot`, `ghostty`, `wezterm`, etc.).
+  - Runs with Wofi, Rofi, Dolphin, Nautilus, Thunar, Chrome, Firefox.
+  - Sets MIME associations via `xdg-mime` for `application/x-bittorrent` and `x-scheme-handler/magnet`.
 
 ---
 
@@ -84,25 +91,35 @@ nothing-torrent --uninstall
 
 ## ⌨️ Controls
 
+> 💡 *All keybindings work on both English and Russian keyboard layouts.*
+
 ### File Selector Screen
-| Key | Action |
+| Key (EN / RU) | Action |
 |---|---|
-| `↑` / `k` | Move cursor up |
-| `↓` / `j` | Move cursor down |
+| `↑` / `k` (л) | Move cursor up |
+| `↓` / `j` (о) | Move cursor down |
 | `Space` | Toggle download checkbox for selected file |
-| `a` | Select all files |
-| `n` | Deselect all files |
-| `i` | Invert selection |
+| `a` (ф) | Select all files |
+| `n` (т) | Deselect all files |
+| `i` (ш) | Invert selection |
 | `Enter` | Confirm selection and start downloading |
-| `q` / `Esc` | Quit / Cancel |
+| `q` (й) / `Esc` | Quit / Cancel |
 
 ### Live Dashboard Screen
-| Key | Action |
+| Key (EN / RU) | Action |
 |---|---|
-| `p` | Pause / Resume download |
-| `s` | Toggle Stealth Ratio Guard ON / OFF |
-| `o` | Open download directory in system file manager |
-| `q` / `Ctrl+C` | Gracefully stop and exit |
+| `p` (з) | Pause / Resume download |
+| `s` (ы) | Open Settings menu |
+| `o` (щ) | Open download directory in system file manager |
+| `q` (й) / `Ctrl+C` | Gracefully stop and exit |
+
+### Settings Menu
+| Key (EN / RU) | Action |
+|---|---|
+| `↑` / `↓` / `k` / `j` | Navigate setting fields |
+| `←` / `→` / `h` / `l` / `Space` | Adjust / cycle value |
+| `Esc` / `s` (ы) | Save changes and return to dashboard |
+| `q` (й) | Quit client |
 
 ---
 
@@ -121,10 +138,6 @@ Configuration is automatically saved to `~/.config/nothing-torrent/config.json`:
   "disable_seed": true
 }
 ```
-
-- `target_ratio`: Desired target ratio reported to trackers (default: `0.85`).
-- `disable_seed`: If `true`, does not send real chunks to peers (saves router CPU and upload bandwidth while reporting target ratio).
-- `default_client`: Spoofed client profile (`qbittorrent`, `transmission`, `deluge`).
 
 ---
 

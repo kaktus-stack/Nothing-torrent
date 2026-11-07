@@ -1,0 +1,17 @@
+# Binaries
+nothing-torrent
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test / Coverage
+*.out
+*.test
+
+# Config
+.config/
+
+# OS specific
+.DS_Store
+Thumbs.db

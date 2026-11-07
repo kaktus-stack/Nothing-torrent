@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -19,9 +20,9 @@ import (
 )
 
 func main() {
-	// If launched from GUI/desktop without a terminal attached,
+	// If launched from GUI/desktop without a terminal attached (Linux only),
 	// spawn ourselves inside the user's terminal emulator
-	if !isatty.IsTerminal(os.Stdin.Fd()) && !isatty.IsTerminal(os.Stdout.Fd()) {
+	if runtime.GOOS != "windows" && !isatty.IsTerminal(os.Stdin.Fd()) && !isatty.IsTerminal(os.Stdout.Fd()) {
 		home, _ := os.UserHomeDir()
 		launcher := filepath.Join(home, ".local", "bin", "nothing-torrent-launcher")
 		if _, err := os.Stat(launcher); err == nil {

@@ -14,7 +14,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-D71920?style=flat-square)](LICENSE)
-[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%2F%20Arch-black?style=flat-square&logo=archlinux)](https://archlinux.org)
+[![Platform: Linux & Windows](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-black?style=flat-square)](https://github.com/kaktus-stack/Nothing-torent/releases)
 [![UI: Bubble Tea](https://img.shields.io/badge/UI-Bubble%20Tea-F0F0F0?style=flat-square)](https://github.com/charmbracelet/bubbletea)
 [![Style: Nothing OS](https://img.shields.io/badge/Style-Nothing%20OS-D71920?style=flat-square)](https://nothing.tech)
 
@@ -97,8 +97,8 @@ FILES PROGRESS
 
 ## 🛠️ Quick Installation
 
+### Linux
 ```bash
-# Clone the repository
 git clone https://github.com/kaktus-stack/Nothing-torent.git
 cd Nothing-torent
 
@@ -107,6 +107,17 @@ make build
 
 # Install binary & register Linux desktop associations
 make install
+```
+
+### Windows (Windows Terminal / PowerShell / CMD)
+1. Download `nothing-torrent.exe` from [Releases](https://github.com/kaktus-stack/Nothing-torent/releases).
+2. Run in terminal or double-click:
+```powershell
+# Associate magnet: links and .torrent files in Windows Registry
+.\nothing-torrent.exe --install
+
+# Launch with magnet link or torrent file
+.\nothing-torrent.exe "magnet:?xt=urn:btih:..."
 ```
 
 ---
@@ -137,9 +148,10 @@ make install
    - Физическая раздача блоков отключена: интернет-канал свободен, роутер не перегревается.
 4. **Независимость от раскладки:**
    - Все горячие клавиши работают одинаково как на английской, так и на русской раскладке (`й` = `q`, `ы` = `s`, `з` = `p`, `щ` = `o` и т.д.).
-5. **Бесшовная интеграция в Linux / Arch:**
-   - Автоматически находит твой эмулятор терминала (`kitty`, `alacritty`, `foot`, `ghostty`, `wezterm`, `gnome-terminal` и др.).
-   - Перехватывает ссылки `magnet:` из браузеров и файлы `.torrent` из проводников и лаунчеров (Wofi, Rofi).
+5. **Кроссплатформенность и интеграция (Linux & Windows):**
+   - **Linux:** автоматически определяет эмулятор терминала (`kitty`, `alacritty`, `foot`, `ghostty` и др.) и настраивает `xdg-mime`.
+   - **Windows:** нативная работа в Windows Terminal / PowerShell / CMD. Команда `nothing-torrent.exe --install` регистрирует протокол `magnet:` и расширение `.torrent` в реестре Windows (HKCU, без прав администратора).
+   - Перехватывает ссылки из браузеров (Chrome, Edge, Firefox) и проводника.
 
 ---
 

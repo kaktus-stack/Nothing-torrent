@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 const LauncherScriptContent = `#!/usr/bin/env bash
@@ -104,7 +105,6 @@ const SvgIconContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128
   <rect width="128" height="128" rx="28" fill="#0D0D0D"/>
   <circle cx="64" cy="64" r="50" fill="none" stroke="#262626" stroke-width="2" stroke-dasharray="4,4"/>
   
-  <!-- Dot matrix letter N -->
   <circle cx="44" cy="40" r="5" fill="#F0F0F0"/>
   <circle cx="44" cy="52" r="5" fill="#F0F0F0"/>
   <circle cx="44" cy="64" r="5" fill="#F0F0F0"/>
@@ -121,13 +121,35 @@ const SvgIconContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128
   <circle cx="84" cy="76" r="5" fill="#F0F0F0"/>
   <circle cx="84" cy="88" r="5" fill="#F0F0F0"/>
 
-  <!-- Iconic Nothing Red Dot -->
   <circle cx="98" cy="30" r="7" fill="#D71920"/>
 </svg>
 `
 
-// Install registers nothing-torrent as desktop app and default torrent handler
+// Install registers nothing-torrent as default desktop app and torrent handler
 func Install() error {
+	if runtime.GOOS == "windows" {
+		return installWindows()
+	}
+	return installLinux()
+}
+
+// Uninstall removes system registrations
+func Uninstall() error {
+	if runtime.GOOS == "windows" {
+		return uninstallWindows()
+	}
+	return uninstallLinux()
+}
+
+// IsInstalled checks if desktop / protocol handler entry already exists
+func IsInstalled() bool {
+	if runtime.GOOS == "windows" {
+		return isInstalledWindows()
+	}
+	return isInstalledLinux()
+}
+
+func installLinux() error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("failed to get user home: %w", err)
@@ -192,8 +214,7 @@ func Install() error {
 	return nil
 }
 
-// Uninstall removes desktop file, launcher, and icon
-func Uninstall() error {
+func uninstallLinux() error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return err
@@ -214,8 +235,7 @@ func Uninstall() error {
 	return nil
 }
 
-// IsInstalled checks if desktop entry already exists
-func IsInstalled() bool {
+func isInstalledLinux() bool {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return false
@@ -223,4 +243,40 @@ func IsInstalled() bool {
 	desktopPath := filepath.Join(home, ".local", "share", "applications", "nothing-torrent.desktop")
 	_, err = os.Stat(desktopPath)
 	return err == nil
+}
+
+// Windows Registry Protocol and File Association Handlers
+func installWindows() error {
+	currentExec, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	execCmd := fmt.Sprintf("\"%s\" \"%%1\"", currentExec)
+
+	// 1. Register magnet protocol handler in HKCU (no admin rights needed)
+	_ = exec.Command("reg", "add", `HKCU\Software\Classes\magnet`, "/ve", "/t", "REG_SZ", "/d", "URL:Magnet Protocol", "/f").Run()
+	_ = exec.Command("reg", "add", `HKCU\Software\Classes\magnet`, "/v", "URL Protocol", "/t", "REG_SZ", "/d", "", "/f").Run()
+	if err := exec.Command("reg", "add", `HKCU\Software\Classes\magnet\shell\open\command`, "/ve", "/t", "REG_SZ", "/d", execCmd, "/f").Run(); err != nil {
+		return fmt.Errorf("failed to register magnet protocol: %w", err)
+	}
+
+	// 2. Register .torrent file association in HKCU
+	_ = exec.Command("reg", "add", `HKCU\Software\Classes\.torrent`, "/ve", "/t", "REG_SZ", "/d", "NothingTorrent", "/f").Run()
+	_ = exec.Command("reg", "add", `HKCU\Software\Classes\NothingTorrent`, "/ve", "/t", "REG_SZ", "/d", "NothingTorrent File", "/f").Run()
+	_ = exec.Command("reg", "add", `HKCU\Software\Classes\NothingTorrent\shell\open\command`, "/ve", "/t", "REG_SZ", "/d", execCmd, "/f").Run()
+
+	return nil
+}
+
+func uninstallWindows() error {
+	_ = exec.Command("reg", "delete", `HKCU\Software\Classes\magnet\shell\open\command`, "/f").Run()
+	_ = exec.Command("reg", "delete", `HKCU\Software\Classes\.torrent`, "/f").Run()
+	_ = exec.Command("reg", "delete", `HKCU\Software\Classes\NothingTorrent`, "/f").Run()
+	return nil
+}
+
+func isInstalledWindows() bool {
+	cmd := exec.Command("reg", "query", `HKCU\Software\Classes\magnet\shell\open\command`)
+	return cmd.Run() == nil
 }

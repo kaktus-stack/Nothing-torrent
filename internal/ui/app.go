@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 
@@ -274,11 +275,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "o": // Open download directory
-			_ = exec.Command("xdg-open", m.cfg.DownloadDir).Start()
+			openDirectory(m.cfg.DownloadDir)
 		}
 	}
 
 	return m, nil
+}
+
+func openDirectory(dir string) {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("explorer", dir)
+	case "darwin":
+		cmd = exec.Command("open", dir)
+	default:
+		cmd = exec.Command("xdg-open", dir)
+	}
+	_ = cmd.Start()
 }
 
 func (m *Model) adjustSetting(forward bool) {

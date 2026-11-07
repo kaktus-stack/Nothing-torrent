@@ -19,14 +19,14 @@
 
 <!-- Big Download Button -->
 <p>
-  <a href="https://github.com/kaktus-stack/Nothing-torent/releases/latest">
+  <a href="https://github.com/kaktus-stack/Nothing-torrent/releases/latest">
     <img src="https://img.shields.io/badge/⬇️_DOWNLOAD_LATEST_RELEASE-v1.0.1-D71920?style=for-the-badge&logo=github&logoColor=white" height="38" alt="Download Release">
   </a>
 </p>
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-D71920?style=flat-square)](LICENSE)
-[![Platform: Linux & Windows](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-black?style=flat-square)](https://github.com/kaktus-stack/Nothing-torent/releases)
+[![Platform: Linux & Windows](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-black?style=flat-square)](https://github.com/kaktus-stack/Nothing-torrent/releases)
 [![UI: Bubble Tea](https://img.shields.io/badge/UI-Bubble%20Tea-F0F0F0?style=flat-square)](https://github.com/charmbracelet/bubbletea)
 [![Style: Nothing OS](https://img.shields.io/badge/Style-Nothing%20OS-D71920?style=flat-square)](https://nothing.tech)
 
@@ -105,7 +105,7 @@ FILES PROGRESS
 ## 🛠️ Quick Installation & Setup
 
 ### 🪟 Windows (Windows Terminal / PowerShell / CMD)
-1. Download `nothing-torrent-windows-amd64.exe` from **[Releases](https://github.com/kaktus-stack/Nothing-torent/releases/latest)**.
+1. Download `nothing-torrent-windows-amd64.exe` from **[Releases](https://github.com/kaktus-stack/Nothing-torrent/releases/latest)**.
 2. Run in terminal or double click:
 ```powershell
 # Optional: Register magnet: protocol and .torrent association in Windows Registry (no admin required)
@@ -117,8 +117,8 @@ FILES PROGRESS
 
 ### 🐧 Linux (Arch / Ubuntu / Debian / Fedora)
 ```bash
-git clone https://github.com/kaktus-stack/Nothing-torent.git
-cd Nothing-torent
+git clone https://github.com/kaktus-stack/Nothing-torrent.git
+cd Nothing-torrent
 
 # Build single static binary (21 MB)
 make build

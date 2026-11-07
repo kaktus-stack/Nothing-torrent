@@ -19,14 +19,14 @@
 
 <!-- Кнопка перехода к релизу -->
 <p>
-  <a href="https://github.com/kaktus-stack/Nothing-torent/releases/latest">
+  <a href="https://github.com/kaktus-stack/Nothing-torrent/releases/latest">
     <img src="https://img.shields.io/badge/⬇️_СКАЧАТЬ_СВЕЖИЙ_РЕЛИЗ-v1.0.1-D71920?style=for-the-badge&logo=github&logoColor=white" height="38" alt="Скачать релиз">
   </a>
 </p>
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-D71920?style=flat-square)](LICENSE)
-[![Platform: Linux & Windows](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-black?style=flat-square)](https://github.com/kaktus-stack/Nothing-torent/releases)
+[![Platform: Linux & Windows](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-black?style=flat-square)](https://github.com/kaktus-stack/Nothing-torrent/releases)
 [![UI: Bubble Tea](https://img.shields.io/badge/UI-Bubble%20Tea-F0F0F0?style=flat-square)](https://github.com/charmbracelet/bubbletea)
 [![Style: Nothing OS](https://img.shields.io/badge/Style-Nothing%20OS-D71920?style=flat-square)](https://nothing.tech)
 
@@ -105,7 +105,7 @@ FILES PROGRESS
 ## 🛠️ Установка и запуск
 
 ### 🪟 Windows (Windows Terminal / PowerShell / CMD)
-1. Скачай `nothing-torrent-windows-amd64.exe` со страницы **[Релизов](https://github.com/kaktus-stack/Nothing-torent/releases/latest)**.
+1. Скачай `nothing-torrent-windows-amd64.exe` со страницы **[Релизов](https://github.com/kaktus-stack/Nothing-torrent/releases/latest)**.
 2. Запусти в терминале или кликни дважды:
 ```powershell
 # Регистрация magnet: ссылок и .torrent файлов в реестре Windows (без прав админа)
@@ -117,8 +117,8 @@ FILES PROGRESS
 
 ### 🐧 Linux (Arch / Ubuntu / Debian / Fedora)
 ```bash
-git clone https://github.com/kaktus-stack/Nothing-torent.git
-cd Nothing-torent
+git clone https://github.com/kaktus-stack/Nothing-torrent.git
+cd Nothing-torrent
 
 # Сборка статичного бинарника (21 МБ)
 make build

@@ -1,7 +1,26 @@
 # NOTHING (TORRENT) 🔴
 
-> Minimalist BitTorrent TUI client inspired by the **Nothing OS** aesthetic.
-> Built with Go, Bubble Tea, and pure BitTorrent internals.
+<div align="center">
+
+```text
+ █▄ █ █▀█ ▀█▀ █ █ █ █▄ █ █▀▀   ( ▀█▀ █▀█ █▀█ █▀█ █▀▀ █▄ █ ▀█▀ )
+ █ ▀█ █▄█  █  █▀█ █ █ ▀█ █▄█    █  █▄█ █▀▄ █▀▄ ██▄ █ ▀█  █  
+```
+
+**Minimalist BitTorrent TUI Client inspired by the Nothing OS aesthetic.**  
+*Минималистичный BitTorrent TUI клиент в эстетике Nothing OS для Linux.*
+
+---
+
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-D71920?style=flat-square)](LICENSE)
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%2F%20Arch-black?style=flat-square&logo=archlinux)](https://archlinux.org)
+[![UI: Bubble Tea](https://img.shields.io/badge/UI-Bubble%20Tea-F0F0F0?style=flat-square)](https://github.com/charmbracelet/bubbletea)
+[![Style: Nothing OS](https://img.shields.io/badge/Style-Nothing%20OS-D71920?style=flat-square)](https://nothing.tech)
+
+[**[ 🇬🇧 English Documentation ](#-english)**] &nbsp;&nbsp;|&nbsp;&nbsp; [**[ 🇷🇺 Документация на русском ](#-русский)**]
+
+---
 
 ```text
 ● NOTHING (TORRENT)   [ DOWNLOADING ]   [● RATIO 0.86x · qBittorrent/4.6.5]
@@ -22,114 +41,115 @@ FILES PROGRESS
 [p] Pause/Resume   [s] Settings   [o] Open Folder   [q] Quit
 ```
 
----
-
-## ✨ Features
-
-- **Nothing OS Aesthetic:**
-  - High-contrast monochrome palette (`#0A0A0A` black, `#F2F2F2` white, `#737373` muted).
-  - Signature Nothing Red (`#D71920`) accent and indicator glyphs (`●`, `○`, `›`).
-  - Dot-matrix segmented progress bars and Unicode Braille speed graphs.
-- **Responsive Layout:**
-  - Automatically adapts to terminal width (from small split-panes <60 cols to ultra-wide displays).
-  - Clean card grids on wide terminals; compact stacked telemetry on small screens.
-- **Layout-Agnostic Controls (Russian / Cyrillic Support):**
-  - All hotkeys work seamlessly regardless of keyboard layout (`й` = `q`, `ы` = `s`, `з` = `p`, `щ` = `o`, `ф` = `a`, `т` = `n`, `л`/`о` = `k`/`j`).
-- **Interactive File Selection:**
-  - Pick which files to download **before** chunks start writing to disk.
-  - Arrow navigation (`↑`/`↓` or `k`/`j`), toggle with `[Space]`, select all (`a`), deselect all (`n`), invert (`i`).
-- **In-App Settings Screen:**
-  - Press `[s]` anywhere to open the live settings menu.
-  - Adjust target ratio, cycle spoofed client profiles, toggle cold-router mode and simulated upload speed presets.
-- **Stealth / Cold-Router Mode (Tracker Spoofing):**
-  - Keeps ratio safely balanced around **`0.80 – 0.90`** on private trackers.
-  - Emulates client fingerprints (default: `qBittorrent/4.6.5` with `-qB4650-...` peer IDs).
-  - Modifies tracker announce metrics with realistic speed jitter without burning upload bandwidth or heating up the router.
-- **Universal Linux & Desktop Integration:**
-  - Auto-detects terminal emulator (`kitty`, `alacritty`, `foot`, `ghostty`, `wezterm`, etc.).
-  - Runs with Wofi, Rofi, Dolphin, Nautilus, Thunar, Chrome, Firefox.
-  - Sets MIME associations via `xdg-mime` for `application/x-bittorrent` and `x-scheme-handler/magnet`.
+</div>
 
 ---
 
-## 🚀 Installation & Quick Start
+<a name="-english"></a>
+# 🇬🇧 English
 
-### Build from Source (Arch Linux / Linux)
-Requirements: `go` 1.22+
+## ⚡ Overview
+
+**NothingTorrent** is an ultra-fast, single-binary BitTorrent client designed for power users who appreciate terminal minimalism, clean aesthetics, and complete privacy control. It provides a tactile TUI experience with instant file selection before downloading, client emulation for tracker compatibility, cold-hardware bandwidth protection, and seamless integration into Linux desktop environments.
+
+### 📊 Feature Matrix
+
+| Feature | NothingTorrent | Traditional GUI (qBittorrent) | Basic CLI (rtorrent/aria2) |
+|---|:---:|:---:|:---:|
+| **Memory Footprint** | **~25 MB** | ~150–400 MB | ~15–30 MB |
+| **Interactive File Selector** | **Yes (pre-download)** | Yes (heavy popups) | No (manual config) |
+| **Nothing OS Aesthetic** | **Yes (dot-matrix/red glyphs)** | No | No |
+| **Tracker Client Emulation** | **Built-in (qB/Transmission)** | Third-party hacks | Manual passkeys |
+| **Cold-Router / Ratio Keeper** | **Built-in (0.80–0.90x)** | No | External scripts |
+| **Linux MIME / Browser Hook** | **Automatic (one-click)** | Desktop-only | Manual xdg setup |
+| **Layout-Agnostic Hotkeys** | **Yes (QWERTY & Cyrillic)** | Varies | Mostly English only |
+
+---
+
+## 🎯 Key Capabilities
+
+- **Interactive File Picker:** Preview torrent metadata and toggle specific files (`Space`) before a single piece is written to disk.
+- **Stealth Ratio Guard:** Automatically reports believable upload ratios (`0.80x – 0.90x`) to private trackers with randomized jitter.
+- **Cold-Router Mode:** Does not burn CPU cycles or upload bandwidth (`disable_seed: true`), keeping your router and hardware cool.
+- **Adaptive Terminal UI:** Scales effortlessly from narrow 50-column split panes up to ultrawide 4K terminals.
+- **Cyrillic Keyboard Support:** Works identically on Russian and English layouts without needing to switch layouts in your system.
+- **Desktop Auto-Integration:** Intercepts magnet links in Firefox, Chrome, Brave, and `.torrent` files in Dolphin, Nautilus, Thunar, Wofi, and Rofi.
+
+---
+
+## ⌨️ Controls & Keybindings
+
+| Key (EN) | Key (RU) | Action | Context |
+|---|---|---|---|
+| `↑` / `k` | `л` | Move cursor up | File Selector / Settings |
+| `↓` / `j` | `о` | Move cursor down | File Selector / Settings |
+| `Space` | `Пробел` | Toggle file checkbox / toggle setting | File Selector / Settings |
+| `a` | `ф` | Select all files | File Selector |
+| `n` | `т` | Deselect all files | File Selector |
+| `i` | `ш` | Invert file selection | File Selector |
+| `Enter` | `Enter` | Start download / Apply setting | File Selector / Settings |
+| `p` | `з` | Pause / Resume active download | Dashboard |
+| `s` | `ы` | Open / Close interactive Settings | Dashboard / Global |
+| `o` | `щ` | Open download directory in file manager | Dashboard |
+| `q` / `Esc` | `й` / `Esc` | Gracefully quit application | Global |
+
+---
+
+## 🛠️ Quick Installation
 
 ```bash
-git clone https://github.com/nothing-torrent/nothing-torrent.git
-cd nothing-torrent
+# Clone the repository
+git clone https://github.com/kaktus-stack/Nothing-torent.git
+cd Nothing-torent
 
-# Build binary
+# Build single static binary (22 MB)
 make build
 
-# Install binary & register Linux MIME associations
-./nothing-torrent --install
-```
-
-### Usage
-
-```bash
-# Open magnet link directly
-nothing-torrent "magnet:?xt=urn:btih:..."
-
-# Open .torrent file directly
-nothing-torrent ~/Downloads/movie.torrent
-
-# Launch interactive mode (pastes prompt if no args)
-nothing-torrent
-
-# Re-register desktop integration
-nothing-torrent --install
-
-# Remove desktop integration
-nothing-torrent --uninstall
+# Install binary & register Linux desktop associations
+make install
 ```
 
 ---
 
-## ⌨️ Controls
-
-> 💡 *All keybindings work on both English and Russian keyboard layouts.*
-
-### File Selector Screen
-| Key (EN / RU) | Action |
-|---|---|
-| `↑` / `k` (л) | Move cursor up |
-| `↓` / `j` (о) | Move cursor down |
-| `Space` | Toggle download checkbox for selected file |
-| `a` (ф) | Select all files |
-| `n` (т) | Deselect all files |
-| `i` (ш) | Invert selection |
-| `Enter` | Confirm selection and start downloading |
-| `q` (й) / `Esc` | Quit / Cancel |
-
-### Live Dashboard Screen
-| Key (EN / RU) | Action |
-|---|---|
-| `p` (з) | Pause / Resume download |
-| `s` (ы) | Open Settings menu |
-| `o` (щ) | Open download directory in system file manager |
-| `q` (й) / `Ctrl+C` | Gracefully stop and exit |
-
-### Settings Menu
-| Key (EN / RU) | Action |
-|---|---|
-| `↑` / `↓` / `k` / `j` | Navigate setting fields |
-| `←` / `→` / `h` / `l` / `Space` | Adjust / cycle value |
-| `Esc` / `s` (ы) | Save changes and return to dashboard |
-| `q` (й) | Quit client |
+<br>
 
 ---
 
-## ⚙️ Configuration
+<a name="-русский"></a>
+# 🇷🇺 Русский
 
-Configuration is automatically saved to `~/.config/nothing-torrent/config.json`:
+## ⚡ О проекте
+
+**NothingTorrent** — это легковесный терминальный BitTorrent-клиент, написанный на Go в минималистичной эстетике **Nothing OS**. Проект создан для тех, кто устал от тяжёлых монструозных GUI-клиентов, жрущих сотни мегабайт оперативной памяти, но хочет иметь удобный интерактивный выбор файлов стрелочками, красивую псевдографику и бесшовную интеграцию в систему.
+
+### 🌟 Главные фичи
+
+1. **Эстетика Nothing OS:**
+   - Высококонтрастная монохромная палитра (`#0A0A0A` черный, `#F2F2F2` белый, `#737373` приглушенный).
+   - Фирменный акцентный красный Nothing Red (`#D71920`) и глифы (`●`, `○`, `›`).
+   - Точечные сегментированные прогресс-бары и графики скорости на Unicode Braille.
+2. **Интерактивный селектор файлов:**
+   - Сначала подгружает метаданные из роя (с анимацией точечной матрицы `[ · · · ]`).
+   - Позволяет стрелочками и пробелом выбрать только нужные серии сериала или отдельные файлы из раздачи.
+3. **Стелс-режим «Холодный роутер» (Ratio Guard):**
+   - Эмулирует популярные клиенты (`qBittorrent/4.6.5`, `Transmission/4.0.5`, `Deluge/2.1.1`) на уровне User-Agent и Peer-ID.
+   - Поддерживает безопасный рейтинг на закрытых трекерах в районе **`0.80x – 0.90x`** с реалистичным джиттером.
+   - Физическая раздача блоков отключена: интернет-канал свободен, роутер не перегревается.
+4. **Независимость от раскладки:**
+   - Все горячие клавиши работают одинаково как на английской, так и на русской раскладке (`й` = `q`, `ы` = `s`, `з` = `p`, `щ` = `o` и т.д.).
+5. **Бесшовная интеграция в Linux / Arch:**
+   - Автоматически находит твой эмулятор терминала (`kitty`, `alacritty`, `foot`, `ghostty`, `wezterm`, `gnome-terminal` и др.).
+   - Перехватывает ссылки `magnet:` из браузеров и файлы `.torrent` из проводников и лаунчеров (Wofi, Rofi).
+
+---
+
+## ⚙️ Конфигурация (`config.json`)
+
+Настройки автоматически создаются в `~/.config/nothing-torrent/config.json`:
 
 ```json
 {
-  "download_dir": "/home/user/Downloads",
+  "download_dir": "/home/username/Downloads",
   "default_client": "qbittorrent",
   "stealth_mode": true,
   "target_ratio": 0.85,
@@ -139,7 +159,18 @@ Configuration is automatically saved to `~/.config/nothing-torrent/config.json`:
 }
 ```
 
+| Параметр | По умолчанию | Описание |
+|---|---|---|
+| `download_dir` | `~/Downloads` | Папка для сохранения скачанных файлов |
+| `default_client` | `"qbittorrent"` | Профиль маскировки (`qbittorrent`, `transmission`, `deluge`) |
+| `stealth_mode` | `true` | Включение автоматического поддержания рейтинга на трекерах |
+| `target_ratio` | `0.85` | Целевой рейтинг, сообщаемый трекеру (0.80–0.90x) |
+| `disable_seed` | `true` | Режим холодного роутера (нулевая реальная отдача блоков) |
+| `min_upload_kbps` | `90` | Нижний порог симулируемой скорости отдачи в аннонсах |
+| `max_upload_kbps` | `220` | Верхний порог симулируемой скорости отдачи в аннонсах |
+
 ---
 
-## 📄 License
-MIT License.
+## 📄 Лицензия
+
+Распространяется под свободной лицензией [MIT](LICENSE).

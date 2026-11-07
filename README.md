@@ -1,24 +1,34 @@
-# NOTHING (TORRENT) 🔴
-
 <div align="center">
+
+# NOTHING (TORRENT) 🔴
 
 ```text
  █▄ █ █▀█ ▀█▀ █ █ █ █▄ █ █▀▀   ( ▀█▀ █▀█ █▀█ █▀█ █▀▀ █▄ █ ▀█▀ )
  █ ▀█ █▄█  █  █▀█ █ █ ▀█ █▄█    █  █▄█ █▀▄ █▀▄ ██▄ █ ▀█  █  
 ```
 
-**Minimalist BitTorrent TUI Client inspired by the Nothing OS aesthetic.**  
-*Минималистичный BitTorrent TUI клиент в эстетике Nothing OS для Linux.*
+**Minimalist BitTorrent TUI Client inspired by the Nothing OS aesthetic.**
 
----
+<br>
+
+<!-- Language Switcher Bar -->
+<p>
+  <a href="README.md"><img src="https://img.shields.io/badge/Language-English-D71920?style=for-the-badge&logo=readme&logoColor=white" alt="English"></a>
+  <a href="README_RU.md"><img src="https://img.shields.io/badge/Переключить_на-Русский-white?style=for-the-badge&logo=readme&logoColor=black" alt="Русский"></a>
+</p>
+
+<!-- Big Download Button -->
+<p>
+  <a href="https://github.com/kaktus-stack/Nothing-torent/releases/latest">
+    <img src="https://img.shields.io/badge/⬇️_DOWNLOAD_LATEST_RELEASE-v1.0.1-D71920?style=for-the-badge&logo=github&logoColor=white" height="38" alt="Download Release">
+  </a>
+</p>
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-D71920?style=flat-square)](LICENSE)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-D71920?style=flat-square)](LICENSE)
 [![Platform: Linux & Windows](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-black?style=flat-square)](https://github.com/kaktus-stack/Nothing-torent/releases)
 [![UI: Bubble Tea](https://img.shields.io/badge/UI-Bubble%20Tea-F0F0F0?style=flat-square)](https://github.com/charmbracelet/bubbletea)
 [![Style: Nothing OS](https://img.shields.io/badge/Style-Nothing%20OS-D71920?style=flat-square)](https://nothing.tech)
-
-[**[ 🇬🇧 English Documentation ](#-english)**] &nbsp;&nbsp;|&nbsp;&nbsp; [**[ 🇷🇺 Документация на русском ](#-русский)**]
 
 ---
 
@@ -45,12 +55,9 @@ FILES PROGRESS
 
 ---
 
-<a name="-english"></a>
-# 🇬🇧 English
-
 ## ⚡ Overview
 
-**NothingTorrent** is an ultra-fast, single-binary BitTorrent client designed for power users who appreciate terminal minimalism, clean aesthetics, and complete privacy control. It provides a tactile TUI experience with instant file selection before downloading, client emulation for tracker compatibility, cold-hardware bandwidth protection, and seamless integration into Linux desktop environments.
+**NothingTorrent** is an ultra-fast, single-binary BitTorrent client designed for power users who appreciate terminal minimalism, clean aesthetics, and complete privacy control. It provides a tactile TUI experience with instant file selection before downloading, client emulation for tracker compatibility, cold-hardware bandwidth protection, and seamless integration into Linux and Windows environments.
 
 ### 📊 Feature Matrix
 
@@ -61,7 +68,7 @@ FILES PROGRESS
 | **Nothing OS Aesthetic** | **Yes (dot-matrix/red glyphs)** | No | No |
 | **Tracker Client Emulation** | **Built-in (qB/Transmission)** | Third-party hacks | Manual passkeys |
 | **Cold-Router / Ratio Keeper** | **Built-in (0.80–0.90x)** | No | External scripts |
-| **Linux MIME / Browser Hook** | **Automatic (one-click)** | Desktop-only | Manual xdg setup |
+| **Desktop / Browser Integration** | **Automatic (one-click)** | Desktop-only | Manual setup |
 | **Layout-Agnostic Hotkeys** | **Yes (QWERTY & Cyrillic)** | Varies | Mostly English only |
 
 ---
@@ -73,7 +80,7 @@ FILES PROGRESS
 - **Cold-Router Mode:** Does not burn CPU cycles or upload bandwidth (`disable_seed: true`), keeping your router and hardware cool.
 - **Adaptive Terminal UI:** Scales effortlessly from narrow 50-column split panes up to ultrawide 4K terminals.
 - **Cyrillic Keyboard Support:** Works identically on Russian and English layouts without needing to switch layouts in your system.
-- **Desktop Auto-Integration:** Intercepts magnet links in Firefox, Chrome, Brave, and `.torrent` files in Dolphin, Nautilus, Thunar, Wofi, and Rofi.
+- **Desktop Auto-Integration:** Intercepts magnet links in Firefox, Chrome, Brave, and `.torrent` files in Dolphin, Nautilus, Thunar, Wofi, Rofi, and Windows Explorer.
 
 ---
 
@@ -95,73 +102,40 @@ FILES PROGRESS
 
 ---
 
-## 🛠️ Quick Installation
+## 🛠️ Quick Installation & Setup
 
-### Linux
+### 🪟 Windows (Windows Terminal / PowerShell / CMD)
+1. Download `nothing-torrent-windows-amd64.exe` from **[Releases](https://github.com/kaktus-stack/Nothing-torent/releases/latest)**.
+2. Run in terminal or double click:
+```powershell
+# Optional: Register magnet: protocol and .torrent association in Windows Registry (no admin required)
+.\nothing-torrent-windows-amd64.exe --install
+
+# Launch with magnet link or file
+.\nothing-torrent-windows-amd64.exe "magnet:?xt=urn:btih:..."
+```
+
+### 🐧 Linux (Arch / Ubuntu / Debian / Fedora)
 ```bash
 git clone https://github.com/kaktus-stack/Nothing-torent.git
 cd Nothing-torent
 
-# Build single static binary (22 MB)
+# Build single static binary (21 MB)
 make build
 
 # Install binary & register Linux desktop associations
 make install
 ```
 
-### Windows (Windows Terminal / PowerShell / CMD)
-1. Download `nothing-torrent.exe` from [Releases](https://github.com/kaktus-stack/Nothing-torent/releases).
-2. Run in terminal or double-click:
-```powershell
-# Associate magnet: links and .torrent files in Windows Registry
-.\nothing-torrent.exe --install
-
-# Launch with magnet link or torrent file
-.\nothing-torrent.exe "magnet:?xt=urn:btih:..."
-```
-
 ---
 
-<br>
+## ⚙️ Configuration (`config.json`)
 
----
-
-<a name="-русский"></a>
-# 🇷🇺 Русский
-
-## ⚡ О проекте
-
-**NothingTorrent** — это легковесный терминальный BitTorrent-клиент, написанный на Go в минималистичной эстетике **Nothing OS**. Проект создан для тех, кто устал от тяжёлых монструозных GUI-клиентов, жрущих сотни мегабайт оперативной памяти, но хочет иметь удобный интерактивный выбор файлов стрелочками, красивую псевдографику и бесшовную интеграцию в систему.
-
-### 🌟 Главные фичи
-
-1. **Эстетика Nothing OS:**
-   - Высококонтрастная монохромная палитра (`#0A0A0A` черный, `#F2F2F2` белый, `#737373` приглушенный).
-   - Фирменный акцентный красный Nothing Red (`#D71920`) и глифы (`●`, `○`, `›`).
-   - Точечные сегментированные прогресс-бары и графики скорости на Unicode Braille.
-2. **Интерактивный селектор файлов:**
-   - Сначала подгружает метаданные из роя (с анимацией точечной матрицы `[ · · · ]`).
-   - Позволяет стрелочками и пробелом выбрать только нужные серии сериала или отдельные файлы из раздачи.
-3. **Стелс-режим «Холодный роутер» (Ratio Guard):**
-   - Эмулирует популярные клиенты (`qBittorrent/4.6.5`, `Transmission/4.0.5`, `Deluge/2.1.1`) на уровне User-Agent и Peer-ID.
-   - Поддерживает безопасный рейтинг на закрытых трекерах в районе **`0.80x – 0.90x`** с реалистичным джиттером.
-   - Физическая раздача блоков отключена: интернет-канал свободен, роутер не перегревается.
-4. **Независимость от раскладки:**
-   - Все горячие клавиши работают одинаково как на английской, так и на русской раскладке (`й` = `q`, `ы` = `s`, `з` = `p`, `щ` = `o` и т.д.).
-5. **Кроссплатформенность и интеграция (Linux & Windows):**
-   - **Linux:** автоматически определяет эмулятор терминала (`kitty`, `alacritty`, `foot`, `ghostty` и др.) и настраивает `xdg-mime`.
-   - **Windows:** нативная работа в Windows Terminal / PowerShell / CMD. Команда `nothing-torrent.exe --install` регистрирует протокол `magnet:` и расширение `.torrent` в реестре Windows (HKCU, без прав администратора).
-   - Перехватывает ссылки из браузеров (Chrome, Edge, Firefox) и проводника.
-
----
-
-## ⚙️ Конфигурация (`config.json`)
-
-Настройки автоматически создаются в `~/.config/nothing-torrent/config.json`:
+Saved automatically to `~/.config/nothing-torrent/config.json`:
 
 ```json
 {
-  "download_dir": "/home/username/Downloads",
+  "download_dir": "/home/user/Downloads",
   "default_client": "qbittorrent",
   "stealth_mode": true,
   "target_ratio": 0.85,
@@ -171,18 +145,8 @@ make install
 }
 ```
 
-| Параметр | По умолчанию | Описание |
-|---|---|---|
-| `download_dir` | `~/Downloads` | Папка для сохранения скачанных файлов |
-| `default_client` | `"qbittorrent"` | Профиль маскировки (`qbittorrent`, `transmission`, `deluge`) |
-| `stealth_mode` | `true` | Включение автоматического поддержания рейтинга на трекерах |
-| `target_ratio` | `0.85` | Целевой рейтинг, сообщаемый трекеру (0.80–0.90x) |
-| `disable_seed` | `true` | Режим холодного роутера (нулевая реальная отдача блоков) |
-| `min_upload_kbps` | `90` | Нижний порог симулируемой скорости отдачи в аннонсах |
-| `max_upload_kbps` | `220` | Верхний порог симулируемой скорости отдачи в аннонсах |
-
 ---
 
-## 📄 Лицензия
+## 📄 License
 
-Распространяется под свободной лицензией [MIT](LICENSE).
+Licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE) for details. Copyleft guarantees this software remains free and open-source forever.
